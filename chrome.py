@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from debug_flag import debugging
+from デバッグモード管理 import デバッグモードオン
 
 class Chrome:
     driver = None
@@ -12,7 +12,7 @@ class Chrome:
         options.add_argument("--log-level=3")
 
         #デバッグ用にブラウザを非表示で起動する
-        if not debugging:
+        if not デバッグモードオン:
             options.add_argument("--headless")
 
         #ドライバを自動更新

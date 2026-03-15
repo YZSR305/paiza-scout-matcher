@@ -4,117 +4,117 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import json
 import html
-from debug_flag import debugging
+from デバッグモード管理 import デバッグモードオン
 
 class Paiza:
     driver = None
-    LOGIN = "login"
-    MYPAGE="mypage"
-    SCOUT = "scout"
+    ログインURL = "login"
+    マイページ="mypage"
+    スカウト = "scout"
     URL = {
-        LOGIN:"https://paiza.jp/sign_in",
-        MYPAGE:"https://paiza.jp/career/mypage",
-        SCOUT:"https://paiza.jp/messages",
+        ログインURL:"https://paiza.jp/sign_in",
+        マイページ:"https://paiza.jp/career/mypage",
+        スカウト:"https://paiza.jp/messages",
     }
-    url_list = []
+    url一覧 = []
 
     def __init__(self, driver):
         self.driver = driver
-        self.login()
-        self.go_to_scout_screen()
-        self.set_url_list()
+        self.ログイン()
+        self.スカウト画面へ移動()
+        self.url一覧設定()
 
-    def login(self):
+    def ログイン(self):
         #ログイン画面
-        self.driver.get(self.URL[self.LOGIN])
+        self.driver.get(self.URL[self.ログインURL])
 
         #メールアドレス入力
-        self.input_to_input_element(
-            "input[type='email'][placeholder='メールアドレス']",
-            "非公開",
+        self.入力要素へ入力(
+            "input[type='email']",
+            "xxxxx@yyy.com",
             "メールアドレス"
         )
 
         #パスワード入力
-        self.input_to_input_element(
-            "input[type='password'][placeholder='パスワード']",
-            "非公開",
+        self.入力要素へ入力(
+            "input[type='password']",
+            "xxxxxxxx",
             "パスワード"
         )
 
         #ログインボタンクリック
-        self.button_click(
+        self.ボタンクリック(
             "button.s-cv-button.s-cv-button--primary.s-cv-button--small",
             "ログイン"
         )
 
         #遷移確認
-        self.confirm_transition(self.URL[self.LOGIN])
+        self.遷移確認(self.URL[self.ログインURL])
 
-    def input_to_input_element(self, search_word, input_word, target_element_name):
+    def 入力要素へ入力(self, 検索ワード, 入力ワード, 対象要素名):
         #入力要素を取得
-        input_element = self.driver.find_element(By.CSS_SELECTOR, search_word)
+        入力要素 = self.driver.find_element(By.CSS_SELECTOR, 検索ワード)
         #存在確認
-        if not input_element:
-            print(target_element_name + "入力要素が見つかりませんでした")
+        if not 入力要素:
+            print(対象要素名 + "入力要素が見つかりませんでした")
             exit()
-        #メールアドレス入力要素に入力
-        input_element.send_keys(input_word)
+        #入力要素に入力
+        入力要素.send_keys(入力ワード)
 
-    def button_click(self, search_word, target_element_name):
+    def ボタンクリック(self, 検索ワード, 対象要素名):
         #ボタン取得
-        button_element = self.driver.find_element(By.CSS_SELECTOR, search_word)
+        ボタン要素 = self.driver.find_element(By.CSS_SELECTOR, 検索ワード)
         #存在確認
-        if not button_element:
-            print(target_element_name + "ボタンが見つかりませんでした")
+        if not ボタン要素:
+            print(対象要素名 + "ボタンが見つかりませんでした")
             exit()
         #ボタンをクリック
-        button_element.click()
+        ボタン要素.click()
 
-    def confirm_transition(self, transition_source_URL):
+    def 遷移確認(self, 遷移先URL):
         #遷移するまで最大10秒待機
         try:
-            WebDriverWait(self.driver, 10).until(lambda d: d.current_url != transition_source_URL)
+            WebDriverWait(self.driver, 10).until(lambda d: d.current_url != 遷移先URL)
         except:
             print("ページ遷移失敗")
             exit()
 
-    def go_to_scout_screen(self):
+    def スカウト画面へ移動(self):
         #スカウト画面
-        self.driver.get(self.URL[self.SCOUT])
+        self.driver.get(self.URL[self.スカウト])
         #遷移確認
-        self.confirm_transition(self.URL[self.MYPAGE])
+        self.遷移確認(self.URL[self.マイページ])
 
-    def set_url_list(self):
+    def url一覧設定(self):
         #スカウト一覧取得
-        li_elements = self.get_scouts_list()
+        li要素 = self.スカウト一覧取得()
         #対象スカウトの最大番号取得
-        maximum_number_of_target_scouts = self.maximum_number_of_target_scouts(li_elements)
+        対象スカウト番号の最大値 = self.対象スカウト番号の最大値取得(li要素)
         #デバッグ用に数値固定
-        if debugging:
-            maximum_number_of_target_scouts = 2
+        if デバッグモードオン:
+            対象スカウト番号の最大値 = 2
 
-        for number in range(maximum_number_of_target_scouts + 1):
+        for スカウト番号 in range(対象スカウト番号の最大値 + 1):
             #一番下の未読スカウトをクリック
-            li_elements[number].click()
+            li要素[スカウト番号].click()
             #クリックして表示されるのを待ってからurlを取得
-            target_url = WebDriverWait(self.driver, 10).until(
+            対象url = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a.p-messages-offer-box__title"))
             ).get_attribute("href")
             #取得したurlをリストへ追加
-            self.url_list.append(target_url)
+            self.url一覧.append(対象url)
 
-    def scroll(self, scroll_target):
+    def スクロール(self, スクロール対象):
         #移動前のスクロール位置
-        before_change = self.driver.execute_script("return arguments[0].scrollTop;", scroll_target)
+        スクロール前 = self.driver.execute_script("return arguments[0].scrollTop;", スクロール対象)
         #移動が発生するまでループ
-        while(before_change == self.driver.execute_script("return arguments[0].scrollTop;", scroll_target)):
+        while(スクロール前 == self.driver.execute_script("return arguments[0].scrollTop;", スクロール対象)):
             time.sleep(0.5)
-            self.driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", scroll_target)
+            self.driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", スクロール対象)
 
-    def get_scouts_list(self):
+    def スカウト一覧取得(self):
         #スクロール対象取得
-        scroll_target = WebDriverWait(self.driver, 10).until(
+        スクロール対象 = WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located(
                 (By.CSS_SELECTOR, "div.p-messages-scrollable-frame")
             )
@@ -124,29 +124,29 @@ class Paiza:
             lambda d: d.find_element(By.CSS_SELECTOR, "span.p-messages-scout-messages__status-count-num").text != "0"
         )
         #スカウト総数取得
-        total_scouts = int(
+        スカウト数 = int(
             self.driver.find_element(
                 By.CSS_SELECTOR, "span.p-messages-scout-messages__status-count-num"
             ).text
         )
         #スカウト一覧
-        li_elements = []
-        while(len(li_elements) < total_scouts):
+        li要素一覧 = []
+        while(len(li要素一覧) < スカウト数):
             #スクロール開始
-            self.scroll(scroll_target)
+            self.スクロール(スクロール対象)
             #スカウト一覧取得
-            li_elements = WebDriverWait(self.driver, 10).until(
+            li要素一覧 = WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_all_elements_located(
                     (By.CSS_SELECTOR, "li.p-messages-message-card[data-analytics-class='MessageCard']")
                 )
             )
-        return li_elements
+        return li要素一覧
     
-    def maximum_number_of_target_scouts(self, li_elements):
-        for li_element in reversed(li_elements):
-            analytics_info = li_element.get_attribute("data-analytics-info")
+    def 対象スカウト番号の最大値取得(self, li要素一覧):
+        for li要素 in reversed(li要素一覧):
+            analytics_info = li要素.get_attribute("data-analytics-info")
             json_str = html.unescape(analytics_info)
             data = json.loads(json_str)
             if data.get("read_flag") == 0:
                 return data.get("index")
-        return len(li_elements) - 1
+        return len(li要素一覧) - 1

@@ -1,22 +1,21 @@
-import requests
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
 import atexit
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import time
-import json
-import html
 from chrome import Chrome
 from paiza import Paiza
-from chatGPT import ChatGPT
+from ChatGPTへの共有文章 import ChatGPTへの共有文章
+from デバッグモード管理 import デバッグモードオン
+
+#デバッグ用
+if デバッグモードオン:
+	url一覧 = [
+		'https://paiza.jp/career/job_offers/36987',
+		'https://paiza.jp/career/job_offers/28880',
+		'https://paiza.jp/career/job_offers/17518',
+	]
+	ChatGPTへの共有文章(url一覧)
+	exit()
 
 chrome = Chrome()
 #プログラム正常終了時に自動実行
 atexit.register(chrome.close)
 paiza = Paiza(chrome.driver)
-chatGPT = ChatGPT(chrome.driver, paiza.url_list)
+ChatGPTへの共有文章(paiza.url一覧)
